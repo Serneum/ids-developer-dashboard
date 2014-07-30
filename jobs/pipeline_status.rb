@@ -10,7 +10,7 @@ server = [
            {url: 'https://hub.jazz.net/pipeline/api/status', event: 'prod_status'}
          ]
 
-SCHEDULER.every '90s', :first_in => 0 do |job|
+SCHEDULER.every '120s', :first_in => 0 do |job|
 
     servers.each do |server|
         uri = URI.parse(server['url'])
