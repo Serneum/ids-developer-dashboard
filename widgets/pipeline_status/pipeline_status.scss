@@ -3,8 +3,6 @@
 // ----------------------------------------------------------------------------
 $value-color:       #fff;
 
-$background-color:  #B051B0;
-
 $title-color:       rgba(255, 255, 255, 0.7);
 $label-color:       rgba(255, 255, 255, 0.7);
 $moreinfo-color:    rgba(255, 255, 255, 0.7);
@@ -12,9 +10,8 @@ $moreinfo-color:    rgba(255, 255, 255, 0.7);
 // ----------------------------------------------------------------------------
 // Widget-list styles
 // ----------------------------------------------------------------------------
-.widget-qa-pipeline-status {
+.widget-pipeline-status {
 
-  background-color: $background-color;
   vertical-align: top;
 
   .title {
@@ -65,4 +62,16 @@ $moreinfo-color:    rgba(255, 255, 255, 0.7);
   .green {
     color: green;
   }
+}
+
+.beta3 {
+  background-color: #12B0C5;
+}
+
+.qa {
+  background-color: #B051B0;
+}
+
+.prod {
+  background-color: #EDBE32;
 }
