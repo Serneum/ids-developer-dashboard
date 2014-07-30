@@ -28,17 +28,13 @@ SCHEDULER.every '120s', :first_in => 0 do |job|
                 name = service
                 status = data['status']
                 if status == 'OK'
-                    result = 1
                     arrow = "icon-ok-sign"
                     color = "green"
-                    message = status
                 else
-                    result = 0
                     arrow = "icon-warning-sign"
                     color = "red"
-                    message = data['message']
                 end
-                statuses.push({label: service, value: result, arrow: arrow, color: color})
+                statuses.push({label: service, arrow: arrow, color: color})
             end
         end
 
