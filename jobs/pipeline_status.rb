@@ -4,17 +4,19 @@ require 'uri'
 require 'rubygems'
 require 'json'
 
-server = [
-           {url: 'https://beta3.hub.jazz.net/pipeline/api/status', event: 'beta3_status'},
-           {url: 'https://qa.hub.jazz.net/pipeline/api/status', event: 'qa_status'},
-           {url: 'https://hub.jazz.net/pipeline/api/status', event: 'prod_status'}
-         ]
+ops = eval(File.open('options') {|f| f.read })
+
+servers = [
+            {url: ops[:dev_url] + '/pipeline/api/status', event: 'devp_status'},
+            {url: ops[:qa_url] + '/pipeline/api/status', event: 'qap_status'},
+            {url: ops[:prod_url] + '/pipeline/api/status', event: 'prodp_status'},
+          ]
 
 SCHEDULER.every '120s', :first_in => 0 do |job|
 
     servers.each do |server|
-        uri = URI.parse(server['url'])
         statuses = Array.new
+        uri = URI.parse(server[:url])
         http = Net::HTTP.new(uri.host, uri.port)
         if uri.scheme == "https"
             http.use_ssl=true
@@ -39,6 +41,6 @@ SCHEDULER.every '120s', :first_in => 0 do |job|
         end
 
         # print statuses to dashboard
-        send_event(server['event'], {items: statuses})
+        send_event(server[:event], {items: statuses})
     end
 end
