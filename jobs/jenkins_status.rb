@@ -57,7 +57,7 @@ SCHEDULER.every '120s', :first_in => 0 do |job|
 
             # print statuses to dashboard
             send_event(server[:event], {items: statuses})
-        rescue Timeout::error
+        rescue Timeout::Error
             puts 'Server ' + server[:url] + ' took too long to respond'
         end
     end
