@@ -30,32 +30,36 @@ SCHEDULER.every '120s', :first_in => 0 do |job|
         end
         request = Net::HTTP::Get.new(uri.request_uri)
         request.basic_auth ops[:username], ops[:password]
-        response = http.request(request)
-        if response.code == "200"
-            begin
-                parsed = JSON.parse(response.body)
-                folders = parsed['jobs']
-                jobs = getAllJobs(folders)
-                for i in 0..9
-                    job = jobs[i]
-                    name = job['displayName']
-                    status = job['lastBuild']['result']
-                    if status == 'SUCCESS'
-                        arrow = "icon-ok-sign"
-                        color = "green"
-                    else
-                        arrow = "icon-warning-sign"
-                        color = "red"
+        begin
+            response = http.request(request)
+            if response.code == "200"
+                begin
+                    parsed = JSON.parse(response.body)
+                    folders = parsed['jobs']
+                    jobs = getAllJobs(folders)
+                    for i in 0..9
+                        job = jobs[i]
+                        name = job['displayName']
+                        status = job['lastBuild']['result']
+                        if status == 'SUCCESS'
+                            arrow = "icon-ok-sign"
+                            color = "green"
+                        else
+                            arrow = "icon-warning-sign"
+                            color = "red"
+                        end
+                        statuses.push({label: name, arrow: arrow, color: color})
                     end
-                    statuses.push({label: name, arrow: arrow, color: color})
+                rescue JSON::ParserError
+                    puts 'There was an error reading from ' + server[:url]
                 end
-            rescue JSON::ParserError
-                puts 'There was an error reading from ' + server[:url]
             end
-        end
 
-        # print statuses to dashboard
-        send_event(server[:event], {items: statuses})
+            # print statuses to dashboard
+            send_event(server[:event], {items: statuses})
+        rescue Timeout::error
+            puts 'Server ' + server[:url] + ' took too long to respond'
+        end
     end
 end
 
