@@ -24,17 +24,21 @@ SCHEDULER.every '120s', :first_in => 0 do |job|
         end
         request = Net::HTTP::Get.new(uri.request_uri)
         response = http.request(request)
-        services = JSON.parse(response.body)
-        services.each do |service, data|
-            status = data['status']
-            if status == 'OK'
-                arrow = "icon-ok-sign"
-                color = "green"
-            else
-                arrow = "icon-warning-sign"
-                color = "red"
+        begin
+            services = JSON.parse(response.body)
+            services.each do |service, data|
+                status = data['status']
+                if status == 'OK'
+                    arrow = "icon-ok-sign"
+                    color = "green"
+                else
+                    arrow = "icon-warning-sign"
+                    color = "red"
+                end
+                statuses.push({label: service, arrow: arrow, color: color})
             end
-            statuses.push({label: service, arrow: arrow, color: color})
+        rescue JSON::ParserError
+            puts 'There was an error reading from ' + server[:url]
         end
 
         # print statuses to dashboard

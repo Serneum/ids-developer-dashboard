@@ -32,21 +32,25 @@ SCHEDULER.every '120s', :first_in => 0 do |job|
         request.basic_auth ops[:username], ops[:password]
         response = http.request(request)
         if response.code == "200"
-            parsed = JSON.parse(response.body)
-            folders = parsed['jobs']
-            jobs = getAllJobs(folders)
-            for i in 0..9
-                job = jobs[i]
-                name = job['displayName']
-                status = job['lastBuild']['result']
-                if status == 'SUCCESS'
-                    arrow = "icon-ok-sign"
-                    color = "green"
-                else
-                    arrow = "icon-warning-sign"
-                    color = "red"
+            begin
+                parsed = JSON.parse(response.body)
+                folders = parsed['jobs']
+                jobs = getAllJobs(folders)
+                for i in 0..9
+                    job = jobs[i]
+                    name = job['displayName']
+                    status = job['lastBuild']['result']
+                    if status == 'SUCCESS'
+                        arrow = "icon-ok-sign"
+                        color = "green"
+                    else
+                        arrow = "icon-warning-sign"
+                        color = "red"
+                    end
+                    statuses.push({label: name, arrow: arrow, color: color})
                 end
-                statuses.push({label: name, arrow: arrow, color: color})
+            rescue JSON::ParserError
+                puts 'There was an error reading from ' + server[:url]
             end
         end
 
